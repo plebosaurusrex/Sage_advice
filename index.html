@@ -409,21 +409,20 @@ function pickRandom() {
 }
 
 function resolveInput(raw) {
-  const s = raw.trim().toLowerCase();
-  if (trimmed === '?' || s === 'help') return { type: 'help' };
+  const trimmed = raw.trim().toLowerCase();
+  if (trimmed === '?' || trimmed === 'help') return { type: 'help' };
   const s = trimmed.replace(/[^a-z0-9 ]/g, '');
-  if (GREETING_TRIGGERS.has(s)) {                          // ← greeting FIRST
+  if (GREETING_TRIGGERS.has(s)) {
     return { type: 'tip', text: pickFrom('greeting') };
   }
-  if ([...RUDE_TRIGGERS].some(t => s.includes(t))) {       // ← rude second
+  if ([...RUDE_TRIGGERS].some(t => s.includes(t))) {
     return { type: 'tip', text: pickFrom('rude') };
   }
-  if (ALL_CATEGORIES.includes(s)) {
+  if (ALL_CATEGORIES.includes(s) || s === 'mom') {
     return { type: 'tip', text: pickFrom(s) };
   }
   return { type: 'tip', text: pickRandom() };
 }
-
 // ── Typewriter with block cursor ──────────────────────────────────────────────
 const wisdomEl = document.getElementById('wisdom-text');
 let typeTimer = null;
