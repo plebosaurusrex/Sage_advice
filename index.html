@@ -359,7 +359,7 @@ const TIPS = {
   ],
 };
 
-const ALL_CATEGORIES = ['life', 'body', 'mind', 'heart', 'workout'];
+const ALL_CATEGORIES = ['life', 'body', 'mind', 'heart', 'workout', 'mom'];
 
 const RUDE_TRIGGERS = new Set([
   'fuck', 'fuck you', 'shit', 'ass', 'asshole', 'bitch', 'bastard',
@@ -409,8 +409,9 @@ function pickRandom() {
 }
 
 function resolveInput(raw) {
-  const s = raw.trim().toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const s = raw.trim().toLowerCase();
   if (trimmed === '?' || s === 'help') return { type: 'help' };
+  const s = trimmed.replace(/[^a-z0-9 ]/g, '');
   if (GREETING_TRIGGERS.has(s)) {                          // ← greeting FIRST
     return { type: 'tip', text: pickFrom('greeting') };
   }
