@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,159 +7,154 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-- { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-background: #0a0a0a;
-color: #c8c8b4;
-font-family: ‘Share Tech Mono’, ‘Courier New’, monospace;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-padding: 20px;
-overflow-x: hidden;
-}
+  body {
+    background: #0a0a0a;
+    color: #c8c8b4;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
 
-#terminal {
-width: 100%;
-max-width: 680px;
-}
+  #terminal {
+    width: 100%;
+    max-width: 680px;
+  }
 
-#buddha {
-color: #7ab8a0;
-font-size: clamp(7px, 1.6vw, 13px);
-line-height: 1.35;
-white-space: pre;
-text-shadow: 0 0 12px rgba(122, 184, 160, 0.3);
-margin-bottom: 8px;
-display: inline-block;
-transform-origin: center bottom;
-animation: breathe 5s ease-in-out infinite;
-}
+  #buddha {
+    color: #7ab8a0;
+    font-size: clamp(7px, 1.6vw, 13px);
+    line-height: 1.35;
+    white-space: pre;
+    text-shadow: 0 0 12px rgba(122, 184, 160, 0.3);
+    margin-bottom: 8px;
+    display: inline-block;
+  }
 
-@keyframes breathe {
-0%   { transform: scaleY(1)     scaleX(1);     text-shadow: 0 0 12px rgba(122,184,160,0.3); }
-40%  { transform: scaleY(1.018) scaleX(0.994); text-shadow: 0 0 18px rgba(122,184,160,0.5); }
-100% { transform: scaleY(1)     scaleX(1);     text-shadow: 0 0 12px rgba(122,184,160,0.3); }
-}
+  #mountain-line {
+    color: #4a7a60;
+    font-size: clamp(7px, 1.6vw, 13px);
+    white-space: pre;
+    text-shadow: 0 0 8px rgba(74, 122, 96, 0.4);
+  }
 
-#mountain-line {
-color: #4a7a60;
-font-size: clamp(7px, 1.6vw, 13px);
-white-space: pre;
-text-shadow: 0 0 8px rgba(74, 122, 96, 0.4);
-}
+  #wisdom-box {
+    margin-top: 28px;
+    min-height: 3.2em;
+    padding: 0 4px;
+  }
 
-#wisdom-box {
-margin-top: 28px;
-min-height: 52px;
-padding: 0 4px;
-}
+  #wisdom-text {
+    color: #e8c97a;
+    font-size: clamp(11px, 2.2vw, 15px);
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    text-shadow: 0 0 16px rgba(232, 201, 122, 0.25);
+    min-height: 1.6em;
+    white-space: pre-wrap;
+  }
 
-#wisdom-text {
-color: #e8c97a;
-font-size: clamp(11px, 2.2vw, 15px);
-letter-spacing: 0.04em;
-line-height: 1.6;
-text-shadow: 0 0 16px rgba(232, 201, 122, 0.25);
-min-height: 1.6em;
-}
+  #prompt-area {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    cursor: text;
+    position: relative;
+  }
 
-#wisdom-text::after {
-content: ‘_’;
-opacity: 0;
-}
-#wisdom-text.typing::after {
-opacity: 1;
-animation: blink-cursor 0.6s step-end infinite;
-}
+  #prompt-label {
+    color: #4a6a58;
+    font-size: clamp(10px, 1.8vw, 13px);
+    letter-spacing: 0.08em;
+    user-select: none;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
 
-@keyframes blink-cursor {
-0%, 100% { opacity: 1; }
-50%       { opacity: 0; }
-}
+  /* invisible real input */
+  #prompt-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: text;
+    font-size: 16px; /* prevents iOS zoom */
+  }
 
-#prompt-area {
-margin-top: 22px;
-display: flex;
-align-items: center;
-gap: 8px;
-cursor: text;
-}
+  /* visible fake input line */
+  #prompt-display {
+    color: #7ab8a0;
+    font-family: inherit;
+    font-size: clamp(10px, 1.8vw, 13px);
+    display: flex;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+  }
 
-#prompt-label {
-color: #4a6a58;
-font-size: clamp(10px, 1.8vw, 13px);
-letter-spacing: 0.08em;
-user-select: none;
-}
+  #display-text {
+    white-space: pre;
+  }
 
-#prompt-input {
-background: transparent;
-border: none;
-outline: none;
-color: #7ab8a0;
-font-family: inherit;
-font-size: clamp(10px, 1.8vw, 13px);
-caret-color: #7ab8a0;
-width: 1px;
-flex: 1;
-}
+  /* block cursor — sits right after typed text */
+  #block-cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.1em;
+    background: #7ab8a0;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+    flex-shrink: 0;
+  }
 
-#cursor {
-display: inline-block;
-width: 8px;
-height: 1.1em;
-background: #7ab8a0;
-animation: blink 1.1s step-end infinite;
-vertical-align: text-bottom;
-opacity: 0.8;
-}
+  /* typewriter cursor — same style, shown inside wisdom text */
+  .tw-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.95em;
+    background: #e8c97a;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+    animation: blink 0.6s step-end infinite;
+  }
 
-@keyframes blink {
-0%, 100% { opacity: 0.8; }
-50%       { opacity: 0; }
-}
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
 
-#counter {
-margin-top: 18px;
-color: #2e4a38;
-font-size: clamp(9px, 1.4vw, 11px);
-letter-spacing: 0.12em;
-}
+  #counter {
+    margin-top: 18px;
+    color: #2e4a38;
+    font-size: clamp(9px, 1.4vw, 11px);
+    letter-spacing: 0.12em;
+  }
 
-#tap-hint {
-margin-top: 10px;
-color: #2e4a38;
-font-size: clamp(9px, 1.4vw, 11px);
-letter-spacing: 0.08em;
-cursor: pointer;
-}
+  #tap-hint {
+    margin-top: 10px;
+    color: #2e4a38;
+    font-size: clamp(9px, 1.4vw, 11px);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    user-select: none;
+  }
 </style>
-
 </head>
 <body>
 
 <div id="terminal">
-  <pre id="buddha">                           _
-                        _ooOoo_
-                       o8888888o
-                       88 . 88
-                       (| -_- |)
-                       O\  =  /O
-                    ____/`---'\____
-                  .'  \\|     |//  `.
-                 /  \\|||  :  |||//  \
-                /  _||||| -:- |||||_  \
-                |   | \\\  -  /'| |   |
-                | \_|  `\`---'//  |_/ |
-                \  .-\__ `-. -'__/-.  /
-              ___`. .'  /--.--\  `. .'___
-           .  '&lt;  `.___\_&lt;|&gt;_/___.' _&gt;  `.
-          | | :  `- \`. ;`. _/; .'/ /  .' ; |
-          \  \ `-.   \_\_`. _.'_/_/  -' _.' /</pre>
+  <pre id="buddha"></pre>
   <pre id="mountain-line">===========`-.`___`-.__\ \___  /__.-'_.'_.-'================
                         `=--=-'</pre>
 
@@ -170,105 +164,332 @@ cursor: pointer;
 
   <div id="prompt-area" onclick="focusInput()">
     <span id="prompt-label">&gt;&gt;</span>
-    <input id="prompt-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-    <span id="cursor"></span>
+    <div id="prompt-display">
+      <span id="display-text"></span><span id="block-cursor"></span>
+    </div>
+    <input id="prompt-input" type="text" autocomplete="off" autocorrect="off"
+           autocapitalize="off" spellcheck="false" inputmode="text" />
   </div>
 
   <div id="counter">presses: 0</div>
-  <div id="tap-hint">[ press enter — or tap here on mobile ]</div>
+  <div id="tap-hint">[ press enter — or tap here — type ? for categories ]</div>
 </div>
 
 <script>
-const TIPS = [
-  "Drink water. Not coffee. Water.",
-  "The mountain does not rush. Neither should your reps.",
-  "Sleep is the workout you forgot to schedule.",
-  "Walk barefoot on grass. Touch some dirt. Be normal.",
-  "Eat something that grew in the ground this week.",
-  "Your posture right now is terrible. Fix it.",
-  "Rest days are not weakness. They are the point.",
-  "Lift heavy things. Put them down. Repeat until wise.",
-  "Breathe out on the effort. Every time. Always.",
-  "The Buddha was jacked. Probably. No one checked.",
-  "Consistency beats intensity. Show up ugly.",
-  "You are not tired. You are bored. Go outside.",
-  "Stretch. Just once. Right now. Do it.",
-  "The body keeps score. Feed it accordingly.",
-  "Progress is not linear. The mountain knows this.",
-  "Do not waste the animal, lest you wish to forego the gains of protein.",
-  "The needs of the flesh are the needs of the mind. Feed one and both grow.",
-  "Take your reps 70% to failure on your last burn.",
-  "Stretch after every workout. I know you didn't do it last time.",
-  "Do or do not. There is no try.",
-  "Each day, a new dawn. Each rep, a new chance to grow.",
-  "Do not expect a seed to bear fruit until many seasons have passed. Stop watering it, and it will bear no fruit at all.",
-  "Thank your body for all the ways it carries you.",
-  "Did you drink enough water today?",
-  "Deny your inner critic a voice.",
-  "You are more capable than you think.",
-];
+// ── Buddha ASCII frames (eyes open / eyes closed = blink) ────────────────────
+const FRAME_OPEN =
+`                           _
+                        _ooOoo_
+                       o8888888o
+                       88 . 88
+                       (| ._. |)
+                       O\\  =  /O
+                    ____/\`---'\\____
+                  .'  \\\\|     |//  \`.
+                 /  \\\\|||  :  |||//  \\
+                /  _||||| -:- |||||_  \\
+                |   | \\\\\\  -  /'| |   |
+                | \\_|  \`\\:---'//  |_/ |
+                \\  .-\\__ \`-. -'__/-.  /
+              ___\`. .'  /--.--\\  \`. .'___
+           .  '<  \`.___\\_<|>_/___.' _>  \`.
+          | | :  \`- \\. ;\\. _/; .'/ /  .' ; |
+          \\  \\ \`-.   \\_\\\\. _.'_/_/  -' _.' /`;
 
-// ── No-repeat buffer ──────────────────────────────────────────────────────────
-// New pick is guaranteed not to appear in the last 5 shown
+const FRAME_BLINK =
+`                           _
+                        _ooOoo_
+                       o8888888o
+                       88 . 88
+                       (| -_- |)
+                       O\\  =  /O
+                    ____/\`---'\\____
+                  .'  \\\\|     |//  \`.
+                 /  \\\\|||  :  |||//  \\
+                /  _||||| -:- |||||_  \\
+                |   | \\\\\\  -  /'| |   |
+                | \\_|  \`\\:---'//  |_/ |
+                \\  .-\\__ \`-. -'__/-.  /
+              ___\`. .'  /--.--\\  \`. .'___
+           .  '<  \`.___\\_<|>_/___.' _>  \`.
+          | | :  \`- \\. ;\\. _/; .'/ /  .' ; |
+          \\  \\ \`-.   \\_\\\\. _.'_/_/  -' _.' /`;
+
+const buddhaEl = document.getElementById('buddha');
+buddhaEl.textContent = FRAME_OPEN;
+
+// blink every ~4 seconds, hold closed for 120ms
+function scheduleBlink() {
+  const delay = 3500 + Math.random() * 2000;
+  setTimeout(() => {
+    buddhaEl.textContent = FRAME_BLINK;
+    setTimeout(() => {
+      buddhaEl.textContent = FRAME_OPEN;
+      scheduleBlink();
+    }, 120);
+  }, delay);
+}
+scheduleBlink();
+
+// ── Tips by category ─────────────────────────────────────────────────────────
+const TIPS = {
+  life: [
+    "Drink water. Not coffee. Water.",
+    "The mountain does not rush. Neither should your reps.",
+    "Sleep is the workout you forgot to schedule.",
+    "Walk barefoot on grass. Touch some dirt. Be normal.",
+    "Eat something that grew in the ground this week.",
+    "Rest days are not weakness. They are the point.",
+    "Consistency beats intensity. Show up ugly.",
+    "You are not tired. You are bored. Go outside.",
+    "Progress is not linear. The mountain knows this.",
+    "Do or do not. There is no try.",
+    "Each day, a new dawn. Each rep, a new chance to grow.",
+    "Do not expect a seed to bear fruit until many seasons have passed. Stop watering it, and it will bear no fruit at all.",
+    "Did you drink enough water today?",
+    "You are more capable than you think.",
+    "The path forward begins with a single honest step.",
+    "What you do in the dark builds who you are in the light.",
+  ],
+  body: [
+    "Your posture right now is terrible. Fix it.",
+    "Lift heavy things. Put them down. Repeat until wise.",
+    "Breathe out on the effort. Every time. Always.",
+    "Do not waste the animal, lest you wish to forego the gains of protein.",
+    "Take your reps 70% to failure on your last burn.",
+    "Stretch after every workout. I know you didn't do it last time.",
+    "Eat something that grew in the ground this week.",
+    "The body keeps score. Feed it accordingly.",
+    "Stretch. Just once. Right now. Do it.",
+    "Thank your body for all the ways it carries you.",
+    "The needs of the flesh are the needs of the mind. Feed one and both grow.",
+    "Movement is medicine. The dose is consistency.",
+    "Rest is not surrender. It is where the body rebuilds its temple.",
+    "You cannot outrun a bad diet. But you can start with one good meal.",
+  ],
+  mind: [
+    "The needs of the flesh are the needs of the mind. Feed one and both grow.",
+    "Deny your inner critic a voice.",
+    "Consistency beats intensity. Show up ugly.",
+    "Progress is not linear. The mountain knows this.",
+    "The Buddha was jacked. Probably. No one checked.",
+    "You are not tired. You are bored. Go outside.",
+    "Silence is not emptiness. It is where thought becomes clear.",
+    "The mind that is still can hear what the noise drowns out.",
+    "Discipline is not punishment. It is the highest form of self-respect.",
+    "What you feed your attention, you feed your life.",
+    "Worry is the interest paid on trouble not yet owed.",
+    "Read. Think. Then act. In that order.",
+    "The sharpest tool you own lives between your ears. Use it.",
+  ],
+  heart: [
+    "Thank your body for all the ways it carries you.",
+    "You are more capable than you think.",
+    "Each day, a new dawn. Each rep, a new chance to grow.",
+    "The mountain does not rush. Neither should your reps.",
+    "What you love, tend carefully. It will tend you in return.",
+    "Grief is love with nowhere to go. Give it somewhere.",
+    "Connection is not a weakness. It is the whole point.",
+    "Be gentle with yourself on the hard days. The mountain has hard days too.",
+    "Forgiveness is not absolution. It is putting down a weight you were never meant to carry.",
+    "Tell the people who matter that they matter. Today. Not eventually.",
+    "Joy is not frivolous. It is evidence you are alive.",
+    "Do not let the noise of others drown out your own quiet knowing.",
+  ],
+  rude: [
+    "The stone that is thrown in anger lands on the thrower first.",
+    "Hostility is a wall. It keeps others out, but it also keeps you in.",
+    "The mouth speaks what the heart is full of. What is yours full of today?",
+    "Anger is fire. Useful for warmth. Dangerous when you live inside it.",
+    "The one who strikes first has already lost something.",
+    "Community is not built with contempt. Neither is anything worth having.",
+    "What you put into the world returns, dressed in ways you do not recognize.",
+    "Even mountains soften over time. Consider it.",
+    "Cruelty is the laziest form of strength. Real strength is patience.",
+    "The sage does not lower himself to meet insult. He simply does not go there.",
+  ],
+  greet: [
+    "You have arrived. That is already something.",
+    "The mountain was here before you came. It is glad you did.",
+    "Welcome, traveler. Sit. The wisdom will keep.",
+    "Ah. Another seeker. Or perhaps just someone bored. Either is fine.",
+    "You found this place. That is not nothing.",
+    "Hello. The mountain does not wave back. But it notices.",
+    "Peace to you. Now, what do you actually need?",
+    "Namaste. The light in me sees the light in you. How are your knees?",
+    "Oh good, you're here. The mountain was getting lonely. It won't admit that.",
+    "Greetings. Please wipe your feet. This is a sacred mountain.",
+    "You typed hello into a terminal with a Buddha on it. We are both doing our best.",
+    "Ah, a visitor. The enlightenment is loading. Please wait.",
+    "Hi. Pull up a boulder. Stay awhile. There is nowhere to be.",
+  ],
+};
+
+const ALL_CATEGORIES = ['life', 'body', 'mind', 'heart'];
+
+const RUDE_TRIGGERS = new Set([
+  'fuck', 'fuck you', 'shit', 'ass', 'asshole', 'bitch', 'bastard',
+  'idiot', 'stupid', 'dumb', 'hate', 'nerd', 'loser', 'shut up',
+  'stfu', 'wtf', 'whatever', 'crap', 'damn', 'hell', 'moron', 'ugly',
+  'die', 'kill', 'suck', 'sucks', 'trash', 'garbage', 'lame', 'dweeb', 'asdf',
+]);
+  
+  const GREET_TRIGGERS = new Set([
+  'hi', 'hello', 'whatsup', 'yo', 'greetings', 'sup', 'aloha', 'hola', 
+  'konichiwa', 'bro', 'hey', 'howdy', 'sup', 'good morning', 'good afternoon', 'good evening', 
+  'goodnight', 'salutations', 'hail', 'hiya', 'wassup', 'whatup',
+]);
+
+]);
+
+const HELP_TEXT =
+`categories:
+  life  — how to live
+  body  — how to move and eat
+  mind  — how to think
+  heart — how to feel
+
+type a category and press enter.
+press enter alone for random wisdom.`;
+
+// ── No-repeat buffer per category ────────────────────────────────────────────
 const BUFFER_SIZE = 5;
-const recentIndices = [];
+const recentByCategory = {};
 
-function pickTip() {
+function pickFrom(category) {
+  const pool = TIPS[category];
+  if (!recentByCategory[category]) recentByCategory[category] = [];
+  const recent = recentByCategory[category];
   let idx, attempts = 0;
   do {
-    idx = Math.floor(Math.random() * TIPS.length);
+    idx = Math.floor(Math.random() * pool.length);
     attempts++;
-  } while (recentIndices.includes(idx) && attempts < 40);
-  recentIndices.push(idx);
-  if (recentIndices.length > BUFFER_SIZE) recentIndices.shift();
-  return TIPS[idx];
+  } while (recent.includes(idx) && attempts < 40);
+  recent.push(idx);
+  if (recent.length > BUFFER_SIZE) recent.shift();
+  return pool[idx];
 }
 
-// ── Typewriter ────────────────────────────────────────────────────────────────
+function pickRandom() {
+  const cat = ALL_CATEGORIES[Math.floor(Math.random() * ALL_CATEGORIES.length)];
+  return pickFrom(cat);
+}
+
+function resolveInput(raw) {
+  const s = raw.trim().toLowerCase();
+  if (s === '?') return { type: 'help' };
+  if (RUDE_TRIGGERS.has(s) || [...RUDE_TRIGGERS].some(t => s.includes(t))) {
+    return { type: 'tip', text: pickFrom('rude') };
+  }
+  if (ALL_CATEGORIES.includes(s)) {
+    return { type: 'tip', text: pickFrom(s) };
+  }
+  // anything else including empty → random
+  return { type: 'tip', text: pickRandom() };
+}
+
+// ── Typewriter with block cursor ──────────────────────────────────────────────
 const wisdomEl = document.getElementById('wisdom-text');
 let typeTimer = null;
 
-function typeOut(text) {
+function typeOut(text, color) {
   clearTimeout(typeTimer);
-  wisdomEl.classList.add('typing');
+  wisdomEl.innerHTML = '';
+  wisdomEl.style.color = color || '#e8c97a';
+
   const full = '>> ' + text;
   let i = 0;
 
   function tick() {
+    // render typed chars + cursor block
+    const typed = full.slice(0, i);
+    wisdomEl.innerHTML =
+      typed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+      '<span class="tw-cursor"></span>';
     if (i <= full.length) {
-      wisdomEl.textContent = full.slice(0, i);
       i++;
-      typeTimer = setTimeout(tick, 28 + Math.random() * 22);
+      typeTimer = setTimeout(tick, 24 + Math.random() * 24);
     } else {
-      wisdomEl.classList.remove('typing');
+      // remove cursor when done
+      wisdomEl.innerHTML = typed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
   }
   tick();
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-let count = 0;
-const counterEl = document.getElementById('counter');
-const input     = document.getElementById('prompt-input');
-const tapHint   = document.getElementById('tap-hint');
+function typeHelp(text) {
+  clearTimeout(typeTimer);
+  wisdomEl.style.color = '#7ab8a0';
+  wisdomEl.innerHTML = '';
+  const lines = text.split('\n');
+  let lineIdx = 0, charIdx = 0;
 
-function showWisdom() {
-  count++;
-  counterEl.textContent = `presses: ${count}`;
-  typeOut(pickTip());
-  input.value = '';
+  function tick() {
+    if (lineIdx >= lines.length) {
+      wisdomEl.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return;
+    }
+    const soFar = lines.slice(0, lineIdx).join('\n') +
+                  (lineIdx > 0 ? '\n' : '') +
+                  lines[lineIdx].slice(0, charIdx);
+    wisdomEl.innerHTML =
+      soFar.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+      '<span class="tw-cursor"></span>';
+    charIdx++;
+    if (charIdx > lines[lineIdx].length) { lineIdx++; charIdx = 0; }
+    typeTimer = setTimeout(tick, 18 + Math.random() * 14);
+  }
+  tick();
 }
+
+// ── Prompt display (fake visible input) ──────────────────────────────────────
+const displayText = document.getElementById('display-text');
+const input       = document.getElementById('prompt-input');
+const counterEl   = document.getElementById('counter');
+const tapHint     = document.getElementById('tap-hint');
+
+let count = 0;
+
+input.addEventListener('input', () => {
+  displayText.textContent = input.value;
+});
 
 function focusInput() { input.focus(); }
 
+function submit() {
+  const raw = input.value;
+  const result = resolveInput(raw);
+  input.value = '';
+  displayText.textContent = '';
+  count++;
+  counterEl.textContent = `presses: ${count}`;
+
+  if (result.type === 'help') {
+    typeHelp(HELP_TEXT);
+  } else {
+    typeOut(result.text);
+  }
+}
+
 input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); showWisdom(); }
+  if (e.key === 'Enter') { e.preventDefault(); submit(); }
 });
 
-tapHint.addEventListener('click', showWisdom);
+tapHint.addEventListener('click', () => {
+  if (input.value.trim() === '') {
+    // treat tap with no text as random
+    const result = resolveInput('');
+    count++;
+    counterEl.textContent = `presses: ${count}`;
+    typeOut(result.text);
+  } else {
+    submit();
+  }
+});
+
+document.getElementById('prompt-area').addEventListener('click', focusInput);
 
 window.addEventListener('load', () => { setTimeout(focusInput, 100); });
 </script>
-
 </body>
 </html>
