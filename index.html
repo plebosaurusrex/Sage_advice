@@ -376,16 +376,15 @@ function pickRandom() {
 function resolveInput(raw) {
   const s = raw.trim().toLowerCase();
   if (s === '?') return { type: 'help' };
-  if (GREETING_TRIGGERS.has(s) || [...GREETING_TRIGGERS].some(t => s === t)) {
+  if (GREETING_TRIGGERS.has(s)) {                          // ← greeting FIRST
     return { type: 'tip', text: pickFrom('greeting') };
   }
-  if (RUDE_TRIGGERS.has(s) || [...RUDE_TRIGGERS].some(t => s.includes(t))) {
+  if ([...RUDE_TRIGGERS].some(t => s.includes(t))) {       // ← rude second
     return { type: 'tip', text: pickFrom('rude') };
   }
   if (ALL_CATEGORIES.includes(s)) {
     return { type: 'tip', text: pickFrom(s) };
   }
-  // anything else including empty → random
   return { type: 'tip', text: pickRandom() };
 }
 
