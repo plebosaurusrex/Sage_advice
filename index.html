@@ -308,7 +308,7 @@ const TIPS = {
     "Cruelty is the laziest form of strength. Real strength is patience.",
     "The sage does not lower himself to meet insult. He simply does not go there.",
   ],
-  greet: [
+  greeting: [
     "You have arrived. That is already something.",
     "The mountain was here before you came. It is glad you did.",
     "Welcome, traveler. Sit. The wisdom will keep.",
@@ -331,13 +331,13 @@ const RUDE_TRIGGERS = new Set([
   'fuck', 'fuck you', 'shit', 'ass', 'asshole', 'bitch', 'bastard',
   'idiot', 'stupid', 'dumb', 'hate', 'nerd', 'loser', 'shut up',
   'stfu', 'wtf', 'whatever', 'crap', 'damn', 'hell', 'moron', 'ugly',
-  'die', 'kill', 'suck', 'sucks', 'trash', 'garbage', 'lame', 'dweeb', 'asdf',
+  'die', 'kill', 'suck', 'sucks', 'trash', 'garbage', 'lame',
 ]);
-  
-  const GREET_TRIGGERS = new Set([
-  'hi', 'hello', 'whatsup', 'yo', 'greetings', 'sup', 'aloha', 'hola', 
-  'konichiwa', 'bro', 'hey', 'howdy', 'sup', 'good morning', 'good afternoon', 'good evening', 
-  'goodnight', 'salutations', 'hail', 'hiya', 'wassup', 'whatup',
+
+const GREETING_TRIGGERS = new Set([
+  'hello', 'hi', 'hey', 'greetings', 'howdy', 'sup', 'yo',
+  'good morning', 'good evening', 'good afternoon',
+  'namaste', 'salutations', 'hail', 'hiya', 'heya', 'wassup', 'what up',
 ]);
 
 const HELP_TEXT =
@@ -376,6 +376,9 @@ function pickRandom() {
 function resolveInput(raw) {
   const s = raw.trim().toLowerCase();
   if (s === '?') return { type: 'help' };
+  if (GREETING_TRIGGERS.has(s) || [...GREETING_TRIGGERS].some(t => s === t)) {
+    return { type: 'tip', text: pickFrom('greeting') };
+  }
   if (RUDE_TRIGGERS.has(s) || [...RUDE_TRIGGERS].some(t => s.includes(t))) {
     return { type: 'tip', text: pickFrom('rude') };
   }
