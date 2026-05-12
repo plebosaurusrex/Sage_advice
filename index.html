@@ -380,7 +380,7 @@ const HELP_TEXT =
   body  — how to move and eat
   mind  — how to think
   heart — how to feel
-  workout — random workout for you to try
+  workout — random workout
 
 type a category and press enter.
 press enter alone for random wisdom.`;
@@ -410,7 +410,7 @@ function pickRandom() {
 
 function resolveInput(raw) {
   const s = raw.trim().toLowerCase().replace(/[^a-z0-9 ]/g, '');
-  if (s === '?') return { type: 'help' };
+  if (trimmed === '?' || s === 'help') return { type: 'help' };
   if (GREETING_TRIGGERS.has(s)) {                          // ← greeting FIRST
     return { type: 'tip', text: pickFrom('greeting') };
   }
