@@ -171,7 +171,7 @@
            autocapitalize="off" spellcheck="false" inputmode="text" />
   </div>
 
-  <div id="counter">presses: 0</div>
+  <div id="counter">advice: 0</div>
   <div id="tap-hint">[ press enter — or tap here — type ? for categories ]</div>
 </div>
 
@@ -497,7 +497,7 @@ function submit() {
   input.value = '';
   displayText.textContent = '';
   count++;
-  counterEl.textContent = `presses: ${count}`;
+  counterEl.textContent = `advice: ${count}`;
 
   if (result.type === 'help') {
     typeHelp(HELP_TEXT);
@@ -515,7 +515,7 @@ tapHint.addEventListener('click', () => {
     // treat tap with no text as random
     const result = resolveInput('');
     count++;
-    counterEl.textContent = `presses: ${count}`;
+    counterEl.textContent = `advice: ${count}`;
     typeOut(result.text);
   } else {
     submit();
