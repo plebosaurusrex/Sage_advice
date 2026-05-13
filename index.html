@@ -198,6 +198,12 @@ const FACES = {
   happy:         [`                       (| ^_^ |)`, `                       O\\  v  /O`],
   happy_talking: [`                       (| ^_^ |)`, `                       O\\  o  /O`],
   talking:       [`                       (| ._. |)`, `                       O\\  =  /O`],
+  sleeping_01:   [`                       (| -_- |)`, `                       O\\  o  /O`],
+  sleeping_02:   [`                       (| -_- |)`, `                       O\\  o  /O z`],
+  sleeping_03:   [`                       (| -_- |)`, `                       O\\  O  /O zZ`],
+  sleeping_04:   [`                       (| -_- |)`, `                       O\\  O  /O zZZ`],
+  sleeping_05:   [`                       (| -_- |)`, `                       O\\  O  /O  zZ`],
+  sleeping_06:   [`                       (| -_- |)`, `                       O\\  o  /O   z`],
 };
 
 const buddhaEl = document.getElementById('buddha');
@@ -212,14 +218,25 @@ function renderFace(state) {
 }
 
 // ── Finite State Machine ──────────────────────────────────────────────────────
-// States: idle | reacting | talking
+// States: idle | reacting | talking | sleeping
 // FSM owns all timers; each transition cancels previous ones cleanly.
+
+const WAKEUP_LINES = [
+    "Sorry. Dozed off for a second. What were we talking about?",
+    "Oh. Didn't see you there. Do you need sage advice? I am a sage. I give good advice.",
+    "Ah! You startled me. And I am not startled easily.",
+    "Hm? Oh. You're here. Good. Sit.",
+    "I was not sleeping. I was meditating. Obviously.",
+    "Umm... This is awkward.",
+    "Were you saying something?",
+];
 
 const FSM = (() => {
   let blinkInterval = null;
   let talkInterval  = null;
   let reactionTimer = null;
   let state         = 'idle';
+  let wasSleeping   = false;
 
   function clearAll() {
     clearInterval(blinkInterval);  blinkInterval = null;
@@ -228,22 +245,62 @@ const FSM = (() => {
   }
 
   function startIdle() {
-    clearAll();
-    state = 'idle';
-    renderFace('open');
+      clearAll();
+      state = 'idle';
+      renderFace('open');
 
-    // Blink every ~4 s, held for 120 ms
-    function scheduleBlink() {
-      blinkInterval = setTimeout(() => {
-        renderFace('blink');
-        blinkInterval = setTimeout(() => {
-          renderFace('open');
-          scheduleBlink();
-        }, 120);
-      }, 3500 + Math.random() * 2000);
-    }
-    scheduleBlink();
+      function scheduleBlink() {
+          blinkInterval = setTimeout(() => {
+              renderFace('blink');
+              blinkInterval = setTimeout(() => {
+                  renderFace('open');
+                  scheduleBlink();
+              }, 120);
+          }, 3500 + Math.random() * 2000);
+      }
+      scheduleBlink();
+
+      // Fall asleep after 25s of inactivity
+      reactionTimer = setTimeout(() => FSM.startSleeping(), 25000);
   }
+
+  function startSleeping() {
+      clearAll();
+      state = 'sleeping';
+      wasSleeping = true;
+      const frames = ['sleeping_01', 'sleeping_02', 'sleeping_03', 'sleeping_04', 'sleeping_05', 'sleeping_06'];
+      let i = 0;
+
+      function nextFrame() {
+          renderFace(frames[i % frames.length]);
+          i++;
+          blinkInterval = setTimeout(nextFrame, 900 + Math.random() * 300);
+      }
+      nextFrame();
+  }
+
+    function wakeUp(onDone) {
+        clearAll();
+        state = 'reacting';
+        wasSleeping = false;
+        let blinks = 0;
+        const total = 2 + Math.floor(Math.random() * 2);
+
+        function doBlink() {
+            if (blinks >= total) {
+                const line = WAKEUP_LINES[Math.floor(Math.random() * WAKEUP_LINES.length)];
+                typeOut(line, null, null, onDone);
+                return;
+            }
+            renderFace('blink');
+            reactionTimer = setTimeout(() => {
+                renderFace('open');
+                blinks++;
+                reactionTimer = setTimeout(doBlink, 180 + Math.random() * 120);
+            }, 120);
+        }
+        doBlink();
+    }
 
   function startTalking(sentiment) {
     clearAll();
@@ -261,6 +318,7 @@ const FSM = (() => {
 
   // sentiment: 'happy' | 'sad' | null  (null = no emotional pre-beat)
   function react(sentiment, onDone) {
+      if (wasSleeping) { wakeUp(onDone); return; } 
     clearAll();
     state = 'reacting';
 
@@ -280,11 +338,11 @@ const FSM = (() => {
     startIdle();
   }
 
-  return { startIdle, startTalking, stopTalking, react };
+  return { startIdle, startTalking, stopTalking, react, startSleeping, getState: () => state };
 })();
 
-// Boot into idle
-FSM.startIdle();
+// Boot into sleeping
+FSM.startSleeping();
 
 // ── Tips by category ─────────────────────────────────────────────────────────
 const TIPS = {
@@ -429,6 +487,8 @@ const TIPS = {
 
 const ALL_CATEGORIES = ['life', 'body', 'mind', 'heart', 'joke', 'workout'];
 
+
+
 const RUDE_TRIGGERS = new Set([
   'fuck', 'fuck you', 'shit', 'ass', 'asshole', 'bitch', 'bastard',
   'idiot', 'stupid', 'dumb', 'hate', 'nerd', 'loser', 'shut up',
@@ -494,6 +554,9 @@ function resolveInput(raw) {
   if (s === 'joke') {
     return { type: 'tip', text: pickFrom('joke'), sentiment: 'happy' };
   }
+  if (s === 'sleep') {
+      return { type: 'sleep', sentiment: null };
+  }
   if (ALL_CATEGORIES.includes(s) || s === 'mom') {
     return { type: 'tip', text: pickFrom(s), sentiment: null };
   }
@@ -504,7 +567,7 @@ function resolveInput(raw) {
 const wisdomEl = document.getElementById('wisdom-text');
 let typeTimer = null;
 
-function typeOut(text, color, sentiment) {
+function typeOut(text, color, sentiment, onDone) {
   clearTimeout(typeTimer);
   wisdomEl.innerHTML = '';
   wisdomEl.style.color = color || '#e8c97a';
@@ -527,6 +590,7 @@ function typeOut(text, color, sentiment) {
       // Typewriter done — remove cursor, return to idle
       wisdomEl.innerHTML = typed.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       FSM.stopTalking();
+      if (onDone) onDone();
     }
   }
   tick();
@@ -576,16 +640,25 @@ function focusInput() { input.focus(); }
 
 function submit() {
   const raw = input.value;
-  const result = resolveInput(raw);
   input.value = '';
   displayText.textContent = '';
+    if (FSM.getState() === 'sleeping') {
+        count++;
+        counterEl.textContent = `advice: ${count}`;
+        FSM.react(null, () => {});
+        return;
+    }
+
+  const result = resolveInput(raw);
   count++;
   counterEl.textContent = `advice: ${count}`;
 
   // React first (emotional pre-beat), then type
   FSM.react(result.sentiment, () => {
     if (result.type === 'help') {
-      typeHelp(HELP_TEXT);
+        typeHelp(HELP_TEXT);
+    } else if (result.type === 'sleep') {
+        FSM.startSleeping();
     } else {
       typeOut(result.text, null, result.sentiment);
     }
@@ -609,7 +682,11 @@ tapHint.addEventListener('click', () => {
 
 document.getElementById('prompt-area').addEventListener('click', focusInput);
 
-window.addEventListener('load', () => { setTimeout(focusInput, 100); });
+window.addEventListener('load', () => { 
+    FSM.startSleeping()
+    setTimeout(focusInput, 100);
+});
+
 </script>
 </body>
 </html>
